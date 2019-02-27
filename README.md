@@ -1,1 +1,0 @@
-In the folder Solutions, you'll find cpp files that containts the code I wrote to solve the kattis problem of the same name as the cpp file. If you want to see the original problem, go to https://open.kattis.com/ and write the name of the cpp file in the search bar in the upper right corner.
