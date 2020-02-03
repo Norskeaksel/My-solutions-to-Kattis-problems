@@ -1,6 +1,5 @@
 #if defined _MSC_VER //if using Visual Studio
 #include "std_lib_facilities.h" //include this local header file
-#include <queue>
 #else
 #include<bits/stdc++.h> //include this non portable headerfile 
 using namespace std; //and the standard namespace
@@ -12,6 +11,8 @@ using ld = long double;
 using vll = vector<ll>;
 using vld = vector<ld>;
 using pll = pair<ll, ll>;
+using vpl = vector<pll>;
+using vpd = vector<pair<ld, ld>>;
 
 #define dx first
 #define dy second
@@ -22,17 +23,32 @@ using pll = pair<ll, ll>;
 #define fork(n) for (ll k=0;k<n;k++)
 #define forj(n) for (ll j=0;j<n;j++)
 #define fori(n) for (ll i=0;i<n;i++)
-#define in(t) ll t; cin >> t; while(t--)
-#define fin(n) ll n; cin >> n; fori(n)
+#define in() ll t; cin >> t; while(t--)
+#define fin() ll n; cin >> n; fori(n)
 #define trav(v) for(auto &i:v)
-#define sz(x) (ll)(x).size()
 #define pb(x) push_back(x)
 
-template <class T>
-void ipb(vector<T>&v) {
-	T a;
-	cin >> a;
-	v.pb(a);
+ld distance(ld x1, ld y1, ld x2, ld y2){
+	return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
+}
+
+int dist[1234][1234];
+int mem[1234][1234];
+
+int tsp(int done, int p, ll& n) {
+	if (done == (1 << n) - 1) {
+		return dist[p][0];
+	}
+	int&memo = mem[done][p];
+	if (memo == 0) {
+		int r = 1e9;
+		for (int i = 0; i < n; i++) {
+			if (done >> i & 1) continue;
+			r = min(r, tsp(done | 1 << i, i, n) + dist[p][i]);
+		}
+		memo = r;
+	}
+	return memo;
 }
 
 int main() {
@@ -40,34 +56,18 @@ int main() {
 #if defined _MSC_VER 
 	freopen("Text.txt", "r", stdin);//read all input form this local file 
 #endif
-	in(t) {
-		map<string, int> ware;
-		fin(n) {
-			string a;
-			int b;
-			cin >> a >> b;
-			ware[a] += b;
-		}
-		vector<pair<int,string >>ans;
-		trav(ware) {
-			pair<int, string>p = { -i.dy,i.dx };
-			ans.pb(p);
-		}
-		sort(all(ans));
-		int s = sz(ans);
-		fory(s - 1) {
-			forx(s - 1) {
-				string prev = ans[x - 1].dy;
-				string next = ans[x].dy;
-				int l = sz(next);
-				string sub = next.substr(0, l);
-				if (ans[x - 1].dx == ans[x].dx && sz(prev) > l&&prev.substr(0, l) == sub)
-					swap(ans[x], ans[x - 1]);
-			}
-		}
-		cout <<s << endl;
-		trav(ans) {
-			cout << i.dy << " " << -i.dx << endl;
+	vector<pair<ld, ld>> city;
+	fin() {
+		pair<ld, ld> xy;
+		cin >> xy.dx >> xy.dy;
+		city.pb(xy);
+	}
+	fori(city.size()) {
+		forj(city.size()) {
+			ll d = round(distance(city[j].dx, city[j].dy, city[i].dx, city[i].dy));
+			if (d == 0)
+				d = 1e9;
+			dist[i][j]=d;
 		}
 	}
 }
