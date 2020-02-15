@@ -11,17 +11,6 @@ using namespace std;
 #define forj(n) for (int j=0;j<n;j++)
 #define fori(n) for (int i=0;i<n;i++)
 
-bool commonNeigbours(int base, vector<set<int>> neighbors) {
-	bool ans = 0;
-	for (auto n : neighbors[base]) {//gå gjennom settet som alle naboene til basen
-		//cout << "base: " << base << endl;
-		for (auto n2 : neighbors[n])//fiks dette
-			if (n2 == n)//if 2 the bases neighbors is connected the its not a weak vertice
-				return true;
-		return false;
-	}
-}
-
 int main() {
 #if defined _MSC_VER 
 	freopen("Text.txt", "r", stdin);//read all input form this local file 
@@ -30,26 +19,33 @@ int main() {
 	while (cin >> n) {
 		if (n == -1)
 			exit(0);
+		set<int> ans;
 		int graphs[22][22];
-		vector<set<int>> neighbors;
-		set<int> empty;
+		vector<int> neigbours[22];
 		fori(n) {
-			neighbors.push_back(empty);
 			forj(n) {
 				int a;
 				cin >> a;
 				graphs[j][i] = a;
-				neighbors[i].insert(i);
 			}
 		}
-		vector<int>ans;
 		fori(n) {
-			if (commonNeigbours(i, neighbors) == false)
-				ans.push_back(i);
+			forj(n) {//j=first neighbour
+				if (graphs[j][i] == 1) {
+					for (int k = j + 1; k < n; k++) {//k=2. neighbour
+						if (graphs[k][i] == 1) {
+							if (graphs[k][j] == 1) {
+								ans.insert(i);
+							}
+						}
+					}
+				}
+			}
 		}
-		sort(all(ans));
-		fori(ans.size()){
-			cout << ans[i] << " ";
+		fori(n) {
+			if (ans.count(i) == 0) {
+				cout << i << " ";
+			}
 		}
 		cout << endl;
 	}
