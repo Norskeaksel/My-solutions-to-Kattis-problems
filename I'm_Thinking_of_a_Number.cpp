@@ -1,8 +1,8 @@
 #if defined _MSC_VER //if using Visual Studio
 #include "std_lib_facilities.h" //include this local header file
 #else
-#include<bits/stdc++.h> //include this non portable headerfile 
-using namespace std; //and the standard namespace
+#include<bits/stdc++.h>
+using namespace std;
 #endif
 #pragma warning(disable:4996)//necessary if we want to use freopen() 
 
@@ -28,38 +28,55 @@ using vs = vector<string>;
 #define trav(v) for(auto &i:v)
 #define pb(x) push_back(x)
 
+vector<string> strsplit(string text) {
+	istringstream iss(text);
+	vector<string> results((istream_iterator<string>(iss)),
+		istream_iterator<string>());
+	return results;
+}
+
 int main() {
 	ios::sync_with_stdio(false); cin.tie(0);
 #if defined _MSC_VER 
 	freopen("Text.txt", "r", stdin);//read all input form this local file 
 #endif
-	in(){
-		int n;
-		cin >> n;
-		vll a(n);
-		trav(a){
-			cin >> i;
+	int n;
+	while (cin >> n) {
+		bool none = 1;
+		if (!n)
+			break;
+		int lb = 0, ub = 1e5;
+		vll div;
+		string a, b;
+		int c;
+		fori(n) {
+			cin >> a >> b >> c;
+			if (a == "less")
+				ub = min(ub, c);
+			if (a == "greater")
+				lb = max(lb, c);
+			if (a == "divisible")
+				div.pb(c);
 		}
-		set<int> diff;
-		set<int>diff2;
-		fori(a.size()){
-			if(i){
-				diff.insert(a[i] - a[i - 1]);
+		
+		if (ub == 1e5) {
+			cout << "infinite";
+			none = 0;
+		}
+		else {
+			for (int j = lb+1; j < ub; j++) {
+				trav(div) {
+					if (j%i != 0) {
+						goto skip;
+					}
+				}
+				none = 0;
+				cout << j << " ";
+			skip:;
 			}
 		}
-		sort(all(a));
-		fori(a.size()) {
-			if (i) {
-				diff2.insert(a[i] - a[i - 1]);
-			}
-		}
-		if (diff.size() == 1 || a.size() == 1) {
-			cout << "arithmetic\n";
-		}
-		else if (diff2.size() == 1)
-			cout << "permuted arithmetic\n";
-		else{
-			cout << "non-arithmetic\n";
-		}
+		if (none)
+			cout << "none\n";
+		else cout << endl;
 	}
 }
