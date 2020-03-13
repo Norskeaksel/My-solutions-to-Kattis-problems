@@ -1,45 +1,88 @@
-#include <iostream>
-#include <string>
-#include <algorithm>
+#if defined _MSC_VER //if using Visual Studio
+#include "std_lib_facilities.h" //include this local header file
+#else
+#include<bits/stdc++.h>
 using namespace std;
-//misforstått oppgave, oppgaven er å skrive alfabetet
-void placeChar(string &str, char c, int i, bool front = true) {
-	if (front) {
-		str.erase(str.begin() + i);
-		/*while (c > str[i + 1]) {
-			swap(str[i + 1], str[i]);
-			i++;*/
-	}
-	else {
-		while (c < str[i - 1]) {
-			swap(str[i - 1], str[i]);
-			i--;
-		}
-	}
+#endif
+#pragma warning(disable:4996)//necessary if we want to use freopen() 
+
+using ll = long long;
+using ld = long double;
+using vll = vector<ll>;
+using vld = vector<ld>;
+using pll = pair<ll, ll>;
+using vpl = vector<pll>;
+using vpd = vector<pair<ld, ld>>;
+using vs = vector<string>;
+
+#define dx first
+#define dy second
+#define forx(n) for (ll x=1;x<=n;x++)
+#define fory(n) for (ll y=1;y<=n;y++)
+#define rall(v) (v).rbegin(),(v).rend()
+#define all(v) (v).begin(),(v).end()
+#define fork(n) for (ll k=0;k<n;k++)
+#define forj(n) for (ll j=0;j<n;j++)
+#define fori(n) for (ll i=0;i<n;i++)
+#define in() ll t; cin >> t; while(t--)
+#define trav(v) for(auto &i:v)
+#define pb(x) push_back(x)
+
+struct Card {
+	ll value;
+	ll trueIndex;
+	ll whichStack;
+	ll whereInStack;
+	ll parentCard;
+};
+struct Stack {
+	vector<Card> deck;
+	Card topCard;
+};
+bool operator<(Stack a, Stack b) {
+	return a.topCard.value < b.topCard.value;
 }
+
+ll longestIncreasingSubsequence(vector<Stack> &board) {
+	vll ansIndex;
+	ll whereInStack = board[board.size() - 1].deck.size() - 1;
+	for (ll i = ll(board.size()) - 1; i >= 0; i--) {
+		ansIndex.pb(board[i].deck[whereInStack].trueIndex);
+		whereInStack = board[i].deck[whereInStack].parentCard;
+	}
+	return ansIndex.size();
+}
+
 int main() {
+	ios::sync_with_stdio(false); cin.tie(0);
+#if defined _MSC_VER 
+	freopen("Text.txt", "r", stdin);//read all input form this local file 
+#endif
+	vector<Stack> board;
 	string str;
 	cin >> str;
-	string copy = 'a' + str;
-	str += 'z';
-	int countera = 0, counterb = 0;
-	for (int i = 0; i < str.size() - 1; i++) {
-		if (str[i] > str[i + 1]) {
-			str.erase(str.begin() + i);
-			//placeChar(str, str[i], i);
-			//cout << str << endl;
-			countera++;
-			i = -1;
+	ll c = -1;
+	trav(str) {
+		c++;
+		Stack next;
+		Card newCard = { i,c };
+		next.topCard = newCard;
+		auto it = lower_bound(all(board), next);
+		newCard.whichStack = distance(board.begin(), it);
+		if (board.size() == newCard.whichStack) {//if we need to add a stack
+			if (board.size())
+				newCard.parentCard = board[newCard.whichStack - 1].deck.size() - 1;//Point to the top card of the stack to the left
+			newCard.whereInStack = 0;
+			next.deck.pb(newCard);
+			board.pb(next);
+		}
+		else {//place in current stack
+			if (newCard.whichStack)
+				newCard.parentCard = board[newCard.whichStack - 1].deck.size() - 1;//top card of left stack
+			newCard.whereInStack = board[newCard.whichStack].deck.size();
+			board[newCard.whichStack].deck.pb(newCard);
+			board[newCard.whichStack].topCard = newCard;
 		}
 	}
-	for (int i = copy.size() - 1; i > 0; i--) {
-		if (copy[i] < copy[i - 1]) {
-			//placeChar(copy, copy[i], i,false);
-			copy.erase(copy.begin() + i);
-			cout << copy << endl;
-			counterb++;
-			i = copy.size();
-		}
-	}
-	cout << min(countera, counterb);
+	cout << 26-longestIncreasingSubsequence(board);
 }
