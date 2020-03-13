@@ -28,11 +28,20 @@ using vs = vector<string>;
 #define trav(v) for(auto &i:v)
 #define pb(x) push_back(x)
 
-vector<string> strsplit(string text) {
-	istringstream iss(text);
-	vector<string> results((istream_iterator<string>(iss)),
-		istream_iterator<string>());
-	return results;
+ll knapsack(vll weight, vll value, ll cappacity){
+	ll n = weight.size();
+	vector<vll> T(22, vll(cappacity+1, 0));//table of value given cappacity
+	for (ll i = 1; i <= n;i++) {
+		for (ll w = 0; w <= cappacity;w++) {
+			if(weight[i-1]<= w){
+				T[i][w] = max(T[i - 1][w], value[i-1] + T[i - 1][w - weight[i-1]]);
+			}
+			else{
+				T[i][w] = T[i - 1][w];
+			}
+		}
+	}
+	return T[n][cappacity];
 }
 
 int main() {
@@ -40,46 +49,20 @@ int main() {
 #if defined _MSC_VER 
 	freopen("Text.txt", "r", stdin);//read all input form this local file 
 #endif
-	
-	while (1) {
-		int n;
+	while (1){
+		ll cap;
+		ll n;
 		cin >> n;
-		if (!n)
+		if(!n)
 			break;
-		vpd ans;
-		ld avx = 0, avy = 0;
-		fork(n) {
-			ld x=0, y=0, o=0, r=0;
-			string str;
-			cin.ignore();
-			getline(cin, str);
-			vs b = strsplit(str);
-			for (int i = 0; i < b.size(); i++) {
-				if (i == 0)
-					x = stod(b[i]);
-				else if (i == 1)
-					y = stod(b[i]);
-				else if (i == 3)
-					o = stod(b[i]);
-				else {
-					if (b[i] == "walk") {
-						x += cos(o*acos(-1)/180.0)*stod(b[i + 1]);	
-						y += sin(o*acos(-1) / 180.0)*stod(b[i + 1]);
-					}
-					if (b[i] == "turn")
-						o += stod(b[i + 1]);
-				}
-			}
-			cout << k<<" x= " << x << " y= " << y << endl;
-			ans.pb(make_pair(x, y));
+		vll a(n);
+		ll target=0;
+		trav(a) {
+			cin >> i;
+			target += i;
 		}
-		
-		trav(ans){
-			avx += i.first;
-			avy += i.second;
-		}
-		avx /= ld(ans.size());
-		avy/= ld(ans.size());
-		cout << avx << " " << avy << endl;
+		ll p1 = knapsack(a, a, target / 2);
+		ll p2 = target - p1;
+		cout << p2 << " " << p1 << endl;
 	}
 }
