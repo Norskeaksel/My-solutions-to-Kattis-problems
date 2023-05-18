@@ -1,1 +1,1 @@
-Here you'll find cpp files that containts the code I wrote to solve the programing problem of the same name. If you want to see the original problem, go to https://open.kattis.com/ and search for the name of the cpp file (without the .cpp) in the search bar in the upper right corner.
+Here you'll find my solutins to programing puzzles found on https://open.kattis.com/.
